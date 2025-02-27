@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, BarChart2, Package, CreditCard, FileText, Shield, User, Menu, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -19,6 +21,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       document.documentElement.classList.add('dark');
     }
   }, []);
+
+  // Update sidebar state when screen size changes
+  useEffect(() => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  }, [isMobile]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -46,11 +55,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen bg-[#fafafa] dark:bg-[#121212]">
+      {/* Overlay for mobile when sidebar is open */}
+      {isSidebarOpen && isMobile && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-10"
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-10 flex flex-col bg-white dark:bg-[#1e1e1e] border-r border-[#f1f1f5] dark:border-[#2d2d2d] transition-all duration-300 ease-in-out",
-          isSidebarOpen ? "w-64" : "w-0 -translate-x-full"
+          "fixed inset-y-0 left-0 z-20 flex flex-col bg-white dark:bg-[#1e1e1e] border-r border-[#f1f1f5] dark:border-[#2d2d2d] transition-all duration-300 ease-in-out",
+          isSidebarOpen ? "w-64 translate-x-0" : "w-0 -translate-x-full"
         )}
       >
         <div className="flex items-center h-16 px-5 border-b border-[#f1f1f5] dark:border-[#2d2d2d]">
@@ -78,8 +96,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       {/* Main content */}
       <main
         className={cn(
-          "flex-1 transition-all duration-300 ease-in-out",
-          isSidebarOpen ? "ml-64" : "ml-0"
+          "flex-1 transition-all duration-300 ease-in-out w-full",
+          isSidebarOpen && !isMobile ? "ml-64" : "ml-0"
         )}
       >
         {/* Header */}
