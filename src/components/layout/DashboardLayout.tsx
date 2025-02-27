@@ -72,7 +72,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         )}
       >
         <div className="flex items-center h-16 px-5 border-b border-[#f1f1f5] dark:border-[#2d2d2d]">
-          <span className="text-xl font-semibold text-[#1A1F2C] dark:text-white">Blazewind</span>
+          <span className={cn(
+            "text-xl font-semibold text-[#1A1F2C] dark:text-white overflow-hidden whitespace-nowrap transition-opacity",
+            isSidebarOpen ? "opacity-100" : "opacity-0"
+          )}>
+            Blazewind
+          </span>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
