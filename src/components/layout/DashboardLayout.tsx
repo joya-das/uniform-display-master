@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Bell, BarChart2, Package, CreditCard, FileText, Shield, User, Menu, Sun } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Bell, BarChart2, Package, CreditCard, FileText, Shield, User, Menu, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DashboardLayoutProps {
@@ -9,9 +9,30 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check if user previously selected dark mode
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'true') {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    if (!isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('darkMode', 'true');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('darkMode', 'false');
+    }
   };
 
   const sidebarItems = [
@@ -24,16 +45,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex min-h-screen bg-[#fafafa]">
+    <div className="flex min-h-screen bg-[#fafafa] dark:bg-[#121212]">
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-10 flex flex-col bg-white border-r border-[#f1f1f5] transition-all duration-300 ease-in-out",
+          "fixed inset-y-0 left-0 z-10 flex flex-col bg-white dark:bg-[#1e1e1e] border-r border-[#f1f1f5] dark:border-[#2d2d2d] transition-all duration-300 ease-in-out",
           isSidebarOpen ? "w-64" : "w-0 -translate-x-full"
         )}
       >
-        <div className="flex items-center h-16 px-5 border-b border-[#f1f1f5]">
-          <span className="text-xl font-semibold text-[#1A1F2C]">Blazewind</span>
+        <div className="flex items-center h-16 px-5 border-b border-[#f1f1f5] dark:border-[#2d2d2d]">
+          <span className="text-xl font-semibold text-[#1A1F2C] dark:text-white">Blazewind</span>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -62,22 +83,26 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         )}
       >
         {/* Header */}
-        <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-6 bg-white border-b border-[#f1f1f5]">
+        <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-6 bg-white dark:bg-[#1e1e1e] border-b border-[#f1f1f5] dark:border-[#2d2d2d]">
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-gray-100"
+            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
             aria-label="Toggle sidebar"
           >
-            <Menu size={20} />
+            <Menu size={20} className="dark:text-white" />
           </button>
 
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-md hover:bg-gray-100" aria-label="Toggle theme">
-              <Sun size={20} />
+            <button 
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" 
+              aria-label="Toggle theme"
+              onClick={toggleDarkMode}
+            >
+              {isDarkMode ? <Moon size={20} className="text-white" /> : <Sun size={20} />}
             </button>
             <div className="relative">
-              <button className="p-2 rounded-md hover:bg-gray-100" aria-label="Notifications">
-                <Bell size={20} />
+              <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Notifications">
+                <Bell size={20} className="dark:text-white" />
               </button>
               <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs text-white bg-red-500 rounded-full">
                 3
@@ -89,7 +114,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 alt="User avatar"
                 className="w-8 h-8 rounded-full"
               />
-              <span className="text-sm font-medium">User</span>
+              <span className="text-sm font-medium dark:text-white">User</span>
             </div>
           </div>
         </header>
